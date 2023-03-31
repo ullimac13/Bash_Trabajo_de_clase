@@ -1,0 +1,88 @@
+Hello World
+#!/usr/bin/env bash
+echo "Hello, World!"
+----------------------
+Two Fer
+#!/usr/bin/env bash
+result="you"
+if (($#>0)); then
+	result="$1"
+fi
+echo "One for $result, one for me."
+---------------------------------------
+Error Handling
+#!/usr/bin/env bash
+if (( $# == 1 ))
+then
+    echo "Hello, $1"
+    exit 0
+else
+    echo "Usage: error_handling.sh <person>"
+    exit 1
+fi
+-----------------------------------------------------
+Raindrops
+#!/usr/bin/env bash
+
+(( $1%3 == 0 )) && result+=Pling
+(( $1%5 == 0 )) && result+=Plang
+(( $1%7 == 0 )) && result+=Plong
+echo ${result:-$1}
+--------------------------------------------------------
+Hamming
+#!/usr/bin/env bash
+[ $# -lt 2 ] && echo "Usage: hamming.sh <string1> <string2>" && exit 1
+[ ${#1} -ne ${#2} ] && echo "strands must be of equal length" && exit 1
+for (( i=0 ; i<${#1}; i++ )); do
+  [ "${1:$i:1}" != "${2:$i:1}" ] && (( Hamming += 1 ))
+done
+echo "${Hamming:-0}"
+-------------------------------------------------------------------------------
+Acronym
+#!/usr/bin/env bash
+cand=${1//-/ }
+cand=${cand//[[:punct:]]/}
+for word in $cand; do
+  result+=${word:0:1}
+done
+echo "${result^^}"
+-----------------------------------------------------------
+Armstrong Numbers
+#!/usr/bin/env bash
+for (( i=0; i<${#1}; i++)); do
+    ((Sum += ${1:$i:1}**${#1} ))
+done
+[ "$Sum" -eq "$1" ] && echo true || echo false
+--------------------------------------------------------------
+Pangram
+#!/usr/bin/env bash
+(($# == 1)) || exit 1
+lines_with_blank_line=$(echo "$1" | tr -d "[:space:][:punct:][:digit:]"| tr "[:upper:]" "[:lower:]" | fold -w 1 | sort | uniq | wc -l)
+((lines_with_blank_line == 26)) && echo "true" || echo "false"
+------------------------------------------------------------------------
+Grains
+#!/usr/bin/env bash
+case "$1" in
+    total) printf '%u' $((0xffffffffffffffff));;
+    [1-9]|[1-5][0-9]|6[0-4]) printf '%u' $((1 << $1 - 1));;
+    *) printf 'Error: invalid input'; exit 1;;
+esac
+-----------------------------------------------------------------
+Atbash Cipher
+#!/usr/bin/env bash
+declare -A codebook
+alpha=abcdefghijklmnopqrstuvwxyz
+for i in {0..25}; do
+    codebook[${alpha:i:1}]=${alpha:25-$i:1}
+done
+text=${2//[![:alnum:]]/}
+text=${text,,}
+i=1
+while read -rn 1 current; do
+    [[ $current == [[:alpha:]] ]] && current=${codebook[$current]}
+    result+=$current
+    ((i % 5 == 0)) && result+=' '
+    ((i++))
+done < <(echo -n "$text")
+[[ $1 == decode ]] && result=${result//[[:space:]]/}
+echo "${result% }"
